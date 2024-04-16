@@ -17,13 +17,18 @@ import java.util.Optional;
  **/
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Character.getBySpecies", query = "from CharacterModel where attributes.species like ?1")
+        @NamedQuery(name = "Character.getBySpecies", query = "from CharacterModel where attributes.species like ?1"),
+        @NamedQuery(name = "Character.getByHouse", query = "from CharacterModel where attributes.house like ?1"),
+        @NamedQuery(name = "Character.countByHouse", query = "select count(*) from CharacterModel where attributes.house like ?1"),
+        @NamedQuery(name = "Character.findAll", query = "from CharacterModel"),
+        @NamedQuery(name = "Character.findById", query = "from CharacterModel where id = ?1"),
 })
 public class CharacterModel extends PanacheEntity {
 
     /**
      * The unique identifier of the character. Must be a valid UUID v4.
      **/
+    private String  house = null;
     private String jsonId = null;
 
     private String type = null;
@@ -31,9 +36,25 @@ public class CharacterModel extends PanacheEntity {
     private Character attributes = new Character();
     @jakarta.persistence.Transient
     private CharacterLinks links = new CharacterLinks();
-    public static List<CharacterModel> findByHouse(String houseName) {
-        return find("attributes.house = ?1", houseName).list();
+
+
+    //GET on /
+    public List<CharacterModel> findAll( String name) {
+        return CharacterModel.listAll();
     }
+
+    //GET on character/{id}
+    public CharacterModel findById(String id) {
+        return CharacterModel.findById(Optional.ofNullable(id));
+    }
+
+    public static List<CharacterModel> findByHouse(String houses) {
+        return find("#Character.getByHouse", houses).list();
+    }
+    public static int countByHouse(String houses) {
+        return (int) find("#Character.countByHouse", houses).count();
+    }
+
     public static List<CharacterModel> findBySpeciesLike(String species) {
         return find("#Character.getBySpecies", species).list();
     }
@@ -70,23 +91,5 @@ public class CharacterModel extends PanacheEntity {
 
     public void setLinks(CharacterLinks links) {
         this.links = links;
-    }
-
-    //GET on /
-    public List<CharacterModel> findAll(String name) {
-        return CharacterModel.listAll();
-    }
-    //GET on character/{id}
-    public List<CharacterModel> findById(Long id) {
-        return CharacterModel.findById(Optional.ofNullable(id));
-    }
-    //GET on houses/{house}
-    public List<CharacterModel> findByHouse(Houses house) {
-        return CharacterModel.findByHouse(house.name());
-    }
-
-    //GET on houses-count/{house}
-    public int countByHouse(Houses house) {
-        return CharacterModel.findByHouse(house.name()).size();
     }
 }
