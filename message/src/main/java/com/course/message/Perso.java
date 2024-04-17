@@ -1,14 +1,15 @@
 package com.course.message;
 
 public class Perso {
-    String name;
-    String houses;
-    public Perso(String name, String house) {
+    private String name;
+    private Houses house;
+
+    public Perso(String name, Houses house) {
         this.name = name;
-        this.houses = house;
+        this.house = house;
     }
 
     public Object getHouse() {
-        return houses;
+        return house;
     }
 }
